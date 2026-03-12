@@ -3,235 +3,121 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>360° Broker CRM</title>
+    <title>DiscoverWorkspaces | Premium Office Spaces</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div class="brand">🏢 360° Broker CRM</div>
-      <div class="top-actions">
-        <button id="goPublicBtn" class="ghost">Public Site</button>
-        <button id="goBackendBtn" class="primary">Broker Backend</button>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="#">Discover<span>Workspaces</span></a>
+        <button id="menuToggle" class="menu-toggle" aria-label="Toggle navigation">☰</button>
+        <nav id="siteNav" class="site-nav">
+          <a href="#spaces">Office Spaces</a>
+          <a href="#services">Services</a>
+          <a href="#cities">Cities</a>
+          <a href="#contact">Contact</a>
+          <button class="btn btn-dark">Post Requirement</button>
+        </nav>
       </div>
     </header>
 
     <main>
-      <section id="publicView" class="view active">
-        <div class="hero card">
-          <h1>Premium Real Estate Listings</h1>
-          <p>
-            Website visitors can browse marketed inventory only. Owner contacts,
-            lead pipeline, follow-up history, and internal inventory intelligence
-            are restricted to the authenticated backend CRM.
-          </p>
-          <div class="hero-tags">
-            <span>✅ 360° Brokerage Workflow</span>
-            <span>✅ Inventory + Leads + Follow-ups</span>
-            <span>✅ Website + Social Media Publishing</span>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">Flexible • Managed • Enterprise</p>
+            <h1>Find Your Next Office Space in Minutes</h1>
+            <p class="hero-copy">
+              Explore premium managed offices, coworking floors, and built-to-suit campuses
+              across major business hubs. Curated inventory, transparent pricing, and
+              expert advisory support.
+            </p>
+            <form class="search-bar">
+              <input type="text" placeholder="Search by city, micro-market, or building" />
+              <button type="button" class="btn btn-dark">Search</button>
+            </form>
+            <div class="hero-stats">
+              <article><strong>1,250+</strong><span>Active Listings</span></article>
+              <article><strong>18</strong><span>Cities Covered</span></article>
+              <article><strong>24 hrs</strong><span>Site Visit Support</span></article>
+            </div>
+          </div>
+          <div class="hero-card">
+            <h3>Top Match This Week</h3>
+            <p>Grade-A Managed Office, Cyber City</p>
+            <ul>
+              <li>120 to 450 seats available</li>
+              <li>Move-in ready in 30 days</li>
+              <li>Starting ₹95 / sqft</li>
+            </ul>
+            <button class="btn btn-light">Book a Site Tour</button>
           </div>
         </div>
-
-        <section class="card">
-          <div class="section-head">
-            <h2>Marketed Properties</h2>
-            <input id="publicSearch" placeholder="Search by building, location, type" />
-          </div>
-          <div id="publicPropertyGrid" class="grid"></div>
-        </section>
       </section>
 
-      <section id="backendView" class="view">
-        <section id="loginPanel" class="card">
-          <h2>Broker Backend Login</h2>
-          <p class="muted">Authorized users only. Role-based access is enforced.</p>
-          <div class="form-row">
-            <input id="username" placeholder="Login ID" />
-            <input id="password" type="password" placeholder="Password" />
+      <section id="spaces" class="section container">
+        <div class="section-head">
+          <h2>Featured Office Spaces</h2>
+          <a href="#" class="text-link">View all listings →</a>
+        </div>
+        <div id="listingGrid" class="listing-grid"></div>
+      </section>
+
+      <section id="services" class="section section-muted">
+        <div class="container">
+          <div class="section-head">
+            <h2>Complete Occupier Advisory</h2>
           </div>
-          <div class="inline-actions">
-            <button id="loginBtn" class="primary">Login</button>
-            <small class="muted"
-              >Demo super admin: <strong>admin</strong> /
-              <strong>broker123</strong></small
-            >
+          <div class="service-grid">
+            <article>
+              <h3>Portfolio Strategy</h3>
+              <p>Workspace planning aligned with your expansion roadmap and cost goals.</p>
+            </article>
+            <article>
+              <h3>Transaction Management</h3>
+              <p>Shortlisting, negotiations, and closure support with market intelligence.</p>
+            </article>
+            <article>
+              <h3>Design & Build</h3>
+              <p>Turnkey fit-outs and workplace design with timeline and budget control.</p>
+            </article>
           </div>
-          <div id="authStatus" class="status">Logged out</div>
-        </section>
+        </div>
+      </section>
 
-        <section id="crmPanel" class="hidden">
-          <section class="card stats-grid" id="statsGrid"></section>
-
-          <section class="tabs card">
-            <button class="tab-btn active" data-tab="dashboardPage">Dashboard</button>
-            <button class="tab-btn" data-tab="inventoryPage">Inventory</button>
-            <button class="tab-btn" data-tab="leadPage">Leads</button>
-            <button class="tab-btn" data-tab="marketingPage">Marketing</button>
-            <button class="tab-btn" data-tab="usersPage" id="usersTab">User Access</button>
-          </section>
-
-          <section id="dashboardPage" class="tab-page card active">
-            <h2>360° Brokerage Overview</h2>
-            <p class="muted">
-              Unified command center for inventory status, lead stages, due follow-ups,
-              and marketing readiness.
-            </p>
-            <div class="dual-grid">
-              <div>
-                <h3>Inventory Follow-ups Due</h3>
-                <div id="inventoryFollowUpList" class="stack-list"></div>
-              </div>
-              <div>
-                <h3>Lead Follow-ups Due</h3>
-                <div id="leadFollowUpList" class="stack-list"></div>
-              </div>
-            </div>
-          </section>
-
-          <section id="inventoryPage" class="tab-page card">
-            <div class="section-head">
-              <h2>Inventory Management</h2>
-              <input id="backendPropertySearch" placeholder="Search by building/unit/location" />
-            </div>
-            <form id="propertyForm">
-              <div class="form-row form-3">
-                <input id="buildingName" required placeholder="Building Name" />
-                <input id="location" required placeholder="Location" />
-                <input id="configuration" required placeholder="Configuration" />
-              </div>
-              <div class="form-row form-4">
-                <input id="floor" required placeholder="Floor" />
-                <input id="unitNo" required placeholder="Unit No" />
-                <input id="carpetArea" required type="number" placeholder="Carpet Area (sqft)" />
-                <input id="saleableArea" required type="number" placeholder="Saleable Area (sqft)" />
-              </div>
-              <div class="form-row form-4">
-                <input id="parking" required type="number" placeholder="Parking" />
-                <select id="dealType" required>
-                  <option value="">Deal Type</option>
-                  <option>Lease</option>
-                  <option>Outright</option>
-                  <option>Both</option>
-                </select>
-                <input id="askingPrice" required type="number" placeholder="Outright Price (₹)" />
-                <input id="rentAmount" type="number" placeholder="Monthly Rent (₹)" />
-              </div>
-              <div class="form-row form-4">
-                <input id="lockIn" placeholder="Lock-in (months)" />
-                <input id="deposit" type="number" placeholder="Deposit (₹)" />
-                <input id="escalation" placeholder="Escalation (%)" />
-                <input id="tenure" placeholder="Tenure (years)" />
-              </div>
-              <div class="form-row form-4">
-                <input id="noticePeriod" placeholder="Notice Period (months)" />
-                <input id="workstations" type="number" placeholder="Workstations" />
-                <input id="cabins" type="number" placeholder="Cabins" />
-                <input id="conferenceRooms" type="number" placeholder="Conference Rooms" />
-              </div>
-              <div class="form-row form-4">
-                <input id="pantry" type="number" placeholder="Pantry" />
-                <input id="washroom" type="number" placeholder="Washroom" />
-                <input id="reception" type="number" placeholder="Reception" />
-                <select id="propertyStatus" required>
-                  <option value="">Inventory Status</option>
-                  <option>Available</option>
-                  <option>Under Negotiation</option>
-                  <option>Closed</option>
-                  <option>On Hold</option>
-                </select>
-              </div>
-              <div class="form-row form-4">
-                <input id="ownerName" required placeholder="Owner Name" />
-                <input id="ownerPhone" required placeholder="Owner Mobile" maxlength="10" />
-                <input id="ownerEmail" required type="email" placeholder="Owner Email" />
-                <input id="inventoryFollowUpDate" required type="date" placeholder="Inventory Follow-up" />
-              </div>
-              <div class="form-row">
-                <input id="mediaImages" placeholder="Picture URLs (comma separated)" />
-                <input id="mediaVideos" placeholder="Video URLs (comma separated)" />
-              </div>
-              <textarea id="propertyNotes" rows="3" placeholder="Internal inventory follow-up notes"></textarea>
-              <button type="submit" class="primary">Save Inventory</button>
-            </form>
-            <div id="backendPropertyGrid" class="grid top-gap"></div>
-          </section>
-
-          <section id="leadPage" class="tab-page card">
-            <div class="section-head">
-              <h2>Lead Management</h2>
-              <input id="leadSearch" placeholder="Search lead by name/phone/source" />
-            </div>
-            <form id="leadForm">
-              <div class="form-row form-4">
-                <input id="leadName" required placeholder="Lead Name" />
-                <input id="leadPhone" required placeholder="Lead Mobile" maxlength="10" />
-                <input id="leadEmail" type="email" required placeholder="Lead Email" />
-                <select id="leadSource" required>
-                  <option value="">Lead Source</option>
-                  <option>Website</option>
-                  <option>Social Media</option>
-                  <option>Referral</option>
-                  <option>Walk-in</option>
-                </select>
-              </div>
-              <div class="form-row form-4">
-                <input id="leadRequirement" required placeholder="Requirement" />
-                <input id="leadBudget" required type="number" placeholder="Budget (₹)" />
-                <input id="nextFollowUp" required type="date" />
-                <select id="leadStage" required>
-                  <option>New</option>
-                  <option>Contacted</option>
-                  <option>Site Visit</option>
-                  <option>Negotiation</option>
-                  <option>Won</option>
-                  <option>Lost</option>
-                </select>
-              </div>
-              <div class="form-row">
-                <input id="assignedProperty" placeholder="Map to Unit No" />
-                <textarea id="leadRemarks" rows="2" placeholder="Follow-up remarks"></textarea>
-              </div>
-              <button type="submit" class="primary">Create / Update Lead</button>
-            </form>
-            <div id="leadGrid" class="grid top-gap"></div>
-          </section>
-
-          <section id="marketingPage" class="tab-page card">
-            <h2>Marketing Console</h2>
-            <p class="muted">Push selected properties to website and social media campaigns.</p>
-            <div id="marketingGrid" class="grid"></div>
-          </section>
-
-          <section id="usersPage" class="tab-page card">
-            <h2>User Access Control</h2>
-            <p class="muted">
-              Only super admin can create users and assign access rights.
-            </p>
-            <form id="userForm" class="admin-only">
-              <div class="form-row form-4">
-                <input id="newUserName" placeholder="User Login ID" required />
-                <input id="newUserPassword" placeholder="Password" required />
-                <input id="newUserDisplay" placeholder="Display Name" required />
-                <select id="newUserRole" required>
-                  <option>manager</option>
-                  <option>agent</option>
-                </select>
-              </div>
-              <div class="form-row form-3">
-                <label><input type="checkbox" id="accessInventory" checked /> Inventory</label>
-                <label><input type="checkbox" id="accessLeads" checked /> Leads</label>
-                <label><input type="checkbox" id="accessMarketing" checked /> Marketing</label>
-              </div>
-              <button type="submit" class="primary">Create User</button>
-            </form>
-            <div id="userGrid" class="grid top-gap"></div>
-          </section>
-
-          <button id="logoutBtn" class="danger">Logout</button>
-        </section>
+      <section id="cities" class="section container">
+        <div class="section-head">
+          <h2>Popular Cities</h2>
+        </div>
+        <div class="chip-row">
+          <span>Bangalore</span><span>Mumbai</span><span>Gurugram</span><span>Hyderabad</span>
+          <span>Pune</span><span>Chennai</span><span>Noida</span><span>Ahmedabad</span>
+        </div>
       </section>
     </main>
 
-    <div id="toast" class="toast"></div>
+    <footer id="contact" class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="#">Discover<span>Workspaces</span></a>
+          <p>Helping businesses discover smart office solutions across India.</p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>+91 98765 43210<br />advisory@discoverworkspaces.com</p>
+        </div>
+        <div>
+          <h4>Office</h4>
+          <p>15th Floor, Business Tower,<br />Gurugram, Haryana</p>
+        </div>
+      </div>
+    </footer>
 
     <script src="app.js"></script>
   </body>
