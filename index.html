@@ -20,20 +20,21 @@
         <div class="hero card">
           <h1>Premium Real Estate Listings</h1>
           <p>
-            Discover marketed properties from our brokerage network. For internal records,
-            lead follow-ups, and operations, brokers use the secure backend CRM.
+            Website visitors can browse marketed inventory only. Owner contacts,
+            lead pipeline, follow-up history, and internal inventory intelligence
+            are restricted to the authenticated backend CRM.
           </p>
           <div class="hero-tags">
-            <span>✅ Verified Listings</span>
-            <span>✅ Website Marketing</span>
-            <span>✅ Social Media Ready</span>
+            <span>✅ 360° Brokerage Workflow</span>
+            <span>✅ Inventory + Leads + Follow-ups</span>
+            <span>✅ Website + Social Media Publishing</span>
           </div>
         </div>
 
         <section class="card">
           <div class="section-head">
             <h2>Marketed Properties</h2>
-            <input id="publicSearch" placeholder="Search by building, location, configuration" />
+            <input id="publicSearch" placeholder="Search by building, location, type" />
           </div>
           <div id="publicPropertyGrid" class="grid"></div>
         </section>
@@ -42,14 +43,17 @@
       <section id="backendView" class="view">
         <section id="loginPanel" class="card">
           <h2>Broker Backend Login</h2>
-          <p class="muted">Only authorized brokerage staff can access full CRM data.</p>
+          <p class="muted">Authorized users only. Role-based access is enforced.</p>
           <div class="form-row">
             <input id="username" placeholder="Login ID" />
             <input id="password" type="password" placeholder="Password" />
           </div>
           <div class="inline-actions">
             <button id="loginBtn" class="primary">Login</button>
-            <small class="muted">Demo user: <strong>admin</strong> / <strong>broker123</strong></small>
+            <small class="muted"
+              >Demo super admin: <strong>admin</strong> /
+              <strong>broker123</strong></small
+            >
           </div>
           <div id="authStatus" class="status">Logged out</div>
         </section>
@@ -57,58 +61,110 @@
         <section id="crmPanel" class="hidden">
           <section class="card stats-grid" id="statsGrid"></section>
 
-          <section class="card">
+          <section class="tabs card">
+            <button class="tab-btn active" data-tab="dashboardPage">Dashboard</button>
+            <button class="tab-btn" data-tab="inventoryPage">Inventory</button>
+            <button class="tab-btn" data-tab="leadPage">Leads</button>
+            <button class="tab-btn" data-tab="marketingPage">Marketing</button>
+            <button class="tab-btn" data-tab="usersPage" id="usersTab">User Access</button>
+          </section>
+
+          <section id="dashboardPage" class="tab-page card active">
+            <h2>360° Brokerage Overview</h2>
+            <p class="muted">
+              Unified command center for inventory status, lead stages, due follow-ups,
+              and marketing readiness.
+            </p>
+            <div class="dual-grid">
+              <div>
+                <h3>Inventory Follow-ups Due</h3>
+                <div id="inventoryFollowUpList" class="stack-list"></div>
+              </div>
+              <div>
+                <h3>Lead Follow-ups Due</h3>
+                <div id="leadFollowUpList" class="stack-list"></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="inventoryPage" class="tab-page card">
             <div class="section-head">
-              <h2>Property Master</h2>
+              <h2>Inventory Management</h2>
               <input id="backendPropertySearch" placeholder="Search by building/unit/location" />
             </div>
             <form id="propertyForm">
-              <div class="form-row">
+              <div class="form-row form-3">
                 <input id="buildingName" required placeholder="Building Name" />
                 <input id="location" required placeholder="Location" />
+                <input id="configuration" required placeholder="Configuration" />
               </div>
-              <div class="form-row form-3">
+              <div class="form-row form-4">
                 <input id="floor" required placeholder="Floor" />
                 <input id="unitNo" required placeholder="Unit No" />
-                <input id="configuration" required placeholder="Configuration (e.g., 3BHK)" />
-              </div>
-              <div class="form-row form-3">
                 <input id="carpetArea" required type="number" placeholder="Carpet Area (sqft)" />
                 <input id="saleableArea" required type="number" placeholder="Saleable Area (sqft)" />
-                <input id="parking" required type="number" placeholder="Number of Parking" />
               </div>
-              <div class="form-row form-3">
-                <input id="askingPrice" required type="number" placeholder="Asking Price (₹)" />
+              <div class="form-row form-4">
+                <input id="parking" required type="number" placeholder="Parking" />
+                <select id="dealType" required>
+                  <option value="">Deal Type</option>
+                  <option>Lease</option>
+                  <option>Outright</option>
+                  <option>Both</option>
+                </select>
+                <input id="askingPrice" required type="number" placeholder="Outright Price (₹)" />
+                <input id="rentAmount" type="number" placeholder="Monthly Rent (₹)" />
+              </div>
+              <div class="form-row form-4">
+                <input id="lockIn" placeholder="Lock-in (months)" />
+                <input id="deposit" type="number" placeholder="Deposit (₹)" />
+                <input id="escalation" placeholder="Escalation (%)" />
+                <input id="tenure" placeholder="Tenure (years)" />
+              </div>
+              <div class="form-row form-4">
+                <input id="noticePeriod" placeholder="Notice Period (months)" />
+                <input id="workstations" type="number" placeholder="Workstations" />
+                <input id="cabins" type="number" placeholder="Cabins" />
+                <input id="conferenceRooms" type="number" placeholder="Conference Rooms" />
+              </div>
+              <div class="form-row form-4">
+                <input id="pantry" type="number" placeholder="Pantry" />
+                <input id="washroom" type="number" placeholder="Washroom" />
+                <input id="reception" type="number" placeholder="Reception" />
                 <select id="propertyStatus" required>
-                  <option value="">Status</option>
+                  <option value="">Inventory Status</option>
                   <option>Available</option>
                   <option>Under Negotiation</option>
                   <option>Closed</option>
+                  <option>On Hold</option>
                 </select>
+              </div>
+              <div class="form-row form-4">
                 <input id="ownerName" required placeholder="Owner Name" />
+                <input id="ownerPhone" required placeholder="Owner Mobile" maxlength="10" />
+                <input id="ownerEmail" required type="email" placeholder="Owner Email" />
+                <input id="inventoryFollowUpDate" required type="date" placeholder="Inventory Follow-up" />
               </div>
               <div class="form-row">
                 <input id="mediaImages" placeholder="Picture URLs (comma separated)" />
                 <input id="mediaVideos" placeholder="Video URLs (comma separated)" />
               </div>
-              <textarea id="propertyNotes" rows="3" placeholder="Internal notes"></textarea>
-              <button type="submit" class="primary">Add Property</button>
+              <textarea id="propertyNotes" rows="3" placeholder="Internal inventory follow-up notes"></textarea>
+              <button type="submit" class="primary">Save Inventory</button>
             </form>
             <div id="backendPropertyGrid" class="grid top-gap"></div>
           </section>
 
-          <section class="card">
+          <section id="leadPage" class="tab-page card">
             <div class="section-head">
-              <h2>Lead & Follow-up Management</h2>
+              <h2>Lead Management</h2>
               <input id="leadSearch" placeholder="Search lead by name/phone/source" />
             </div>
             <form id="leadForm">
-              <div class="form-row form-3">
+              <div class="form-row form-4">
                 <input id="leadName" required placeholder="Lead Name" />
-                <input id="leadPhone" required placeholder="Phone" maxlength="10" />
-                <input id="leadEmail" type="email" placeholder="Email" />
-              </div>
-              <div class="form-row form-3">
+                <input id="leadPhone" required placeholder="Lead Mobile" maxlength="10" />
+                <input id="leadEmail" type="email" required placeholder="Lead Email" />
                 <select id="leadSource" required>
                   <option value="">Lead Source</option>
                   <option>Website</option>
@@ -116,10 +172,10 @@
                   <option>Referral</option>
                   <option>Walk-in</option>
                 </select>
+              </div>
+              <div class="form-row form-4">
                 <input id="leadRequirement" required placeholder="Requirement" />
                 <input id="leadBudget" required type="number" placeholder="Budget (₹)" />
-              </div>
-              <div class="form-row form-3">
                 <input id="nextFollowUp" required type="date" />
                 <select id="leadStage" required>
                   <option>New</option>
@@ -129,18 +185,45 @@
                   <option>Won</option>
                   <option>Lost</option>
                 </select>
-                <input id="assignedProperty" placeholder="Map to Unit No" />
               </div>
-              <textarea id="leadRemarks" rows="3" placeholder="Follow-up remarks"></textarea>
+              <div class="form-row">
+                <input id="assignedProperty" placeholder="Map to Unit No" />
+                <textarea id="leadRemarks" rows="2" placeholder="Follow-up remarks"></textarea>
+              </div>
               <button type="submit" class="primary">Create / Update Lead</button>
             </form>
             <div id="leadGrid" class="grid top-gap"></div>
           </section>
 
-          <section class="card">
+          <section id="marketingPage" class="tab-page card">
             <h2>Marketing Console</h2>
-            <p class="muted">Push selected properties to public website and social media campaigns.</p>
+            <p class="muted">Push selected properties to website and social media campaigns.</p>
             <div id="marketingGrid" class="grid"></div>
+          </section>
+
+          <section id="usersPage" class="tab-page card">
+            <h2>User Access Control</h2>
+            <p class="muted">
+              Only super admin can create users and assign access rights.
+            </p>
+            <form id="userForm" class="admin-only">
+              <div class="form-row form-4">
+                <input id="newUserName" placeholder="User Login ID" required />
+                <input id="newUserPassword" placeholder="Password" required />
+                <input id="newUserDisplay" placeholder="Display Name" required />
+                <select id="newUserRole" required>
+                  <option>manager</option>
+                  <option>agent</option>
+                </select>
+              </div>
+              <div class="form-row form-3">
+                <label><input type="checkbox" id="accessInventory" checked /> Inventory</label>
+                <label><input type="checkbox" id="accessLeads" checked /> Leads</label>
+                <label><input type="checkbox" id="accessMarketing" checked /> Marketing</label>
+              </div>
+              <button type="submit" class="primary">Create User</button>
+            </form>
+            <div id="userGrid" class="grid top-gap"></div>
           </section>
 
           <button id="logoutBtn" class="danger">Logout</button>
