@@ -3,96 +3,148 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FreeNest - Zero Brokerage Rentals & Sales</title>
+    <title>360° Broker CRM</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">🏠 FreeNest</div>
-      <nav>
-        <a href="#listings">Listings</a>
-        <a href="#post">Post Property</a>
-        <a href="#verify">Verify Account</a>
-      </nav>
-      <button id="postFreeBtn" class="primary">Post for FREE</button>
+      <div class="brand">🏢 360° Broker CRM</div>
+      <div class="top-actions">
+        <button id="goPublicBtn" class="ghost">Public Site</button>
+        <button id="goBackendBtn" class="primary">Broker Backend</button>
+      </div>
     </header>
 
     <main>
-      <section class="hero">
-        <h1>No Brokerage. No Hidden Fees. 100% Free.</h1>
-        <p>
-          A community-first property marketplace inspired by NoBroker — but completely free for owners and seekers.
-        </p>
-        <div class="hero-tags">
-          <span>✅ Free Listings</span>
-          <span>✅ Verified Users</span>
-          <span>✅ Direct Contact</span>
-        </div>
-      </section>
-
-      <section id="verify" class="card">
-        <h2>Verify your account</h2>
-        <p class="muted">Verification keeps spam low and trust high.</p>
-
-        <div class="auth-grid">
-          <div class="auth-box">
-            <h3>Phone OTP</h3>
-            <label for="phone">Phone Number</label>
-            <input id="phone" type="tel" placeholder="e.g. 9876543210" maxlength="10" />
-            <button id="sendOtpBtn">Send OTP</button>
-
-            <label for="otp">Enter OTP</label>
-            <input id="otp" type="text" placeholder="6 digit OTP" maxlength="6" />
-            <button id="verifyOtpBtn">Verify OTP</button>
-            <small class="muted" id="otpHint">OTP is generated locally for demo purposes.</small>
-          </div>
-
-          <div class="auth-box">
-            <h3>Social Login</h3>
-            <p>Use trusted identity providers.</p>
-            <button id="googleBtn" class="social google">Continue with Google</button>
-            <button id="facebookBtn" class="social facebook">Continue with Facebook</button>
-            <small class="muted">In production, connect OAuth with Firebase/Auth0.</small>
+      <section id="publicView" class="view active">
+        <div class="hero card">
+          <h1>Premium Real Estate Listings</h1>
+          <p>
+            Discover marketed properties from our brokerage network. For internal records,
+            lead follow-ups, and operations, brokers use the secure backend CRM.
+          </p>
+          <div class="hero-tags">
+            <span>✅ Verified Listings</span>
+            <span>✅ Website Marketing</span>
+            <span>✅ Social Media Ready</span>
           </div>
         </div>
 
-        <div id="authStatus" class="status">Not verified</div>
+        <section class="card">
+          <div class="section-head">
+            <h2>Marketed Properties</h2>
+            <input id="publicSearch" placeholder="Search by building, location, configuration" />
+          </div>
+          <div id="publicPropertyGrid" class="grid"></div>
+        </section>
       </section>
 
-      <section id="listings" class="card">
-        <div class="section-head">
-          <h2>Featured listings</h2>
-          <input id="search" placeholder="Search by city/locality/type" />
-        </div>
-        <div id="listingGrid" class="listing-grid"></div>
-      </section>
+      <section id="backendView" class="view">
+        <section id="loginPanel" class="card">
+          <h2>Broker Backend Login</h2>
+          <p class="muted">Only authorized brokerage staff can access full CRM data.</p>
+          <div class="form-row">
+            <input id="username" placeholder="Login ID" />
+            <input id="password" type="password" placeholder="Password" />
+          </div>
+          <div class="inline-actions">
+            <button id="loginBtn" class="primary">Login</button>
+            <small class="muted">Demo user: <strong>admin</strong> / <strong>broker123</strong></small>
+          </div>
+          <div id="authStatus" class="status">Logged out</div>
+        </section>
 
-      <section id="post" class="card">
-        <h2>Post your property</h2>
-        <p>Verified users can list properties in under a minute.</p>
+        <section id="crmPanel" class="hidden">
+          <section class="card stats-grid" id="statsGrid"></section>
 
-        <form id="postForm">
-          <div class="form-row">
-            <input id="title" required placeholder="Title (2BHK near metro)" />
-            <input id="city" required placeholder="City" />
-          </div>
-          <div class="form-row">
-            <input id="locality" required placeholder="Locality" />
-            <select id="type" required>
-              <option value="">Property Type</option>
-              <option>Apartment</option>
-              <option>Independent House</option>
-              <option>PG</option>
-              <option>Commercial</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <input id="price" required type="number" placeholder="Monthly Rent / Price" />
-            <input id="contact" required placeholder="Contact Number" maxlength="10" />
-          </div>
-          <textarea id="description" rows="3" placeholder="Describe property highlights"></textarea>
-          <button type="submit" class="primary">Publish Listing</button>
-        </form>
+          <section class="card">
+            <div class="section-head">
+              <h2>Property Master</h2>
+              <input id="backendPropertySearch" placeholder="Search by building/unit/location" />
+            </div>
+            <form id="propertyForm">
+              <div class="form-row">
+                <input id="buildingName" required placeholder="Building Name" />
+                <input id="location" required placeholder="Location" />
+              </div>
+              <div class="form-row form-3">
+                <input id="floor" required placeholder="Floor" />
+                <input id="unitNo" required placeholder="Unit No" />
+                <input id="configuration" required placeholder="Configuration (e.g., 3BHK)" />
+              </div>
+              <div class="form-row form-3">
+                <input id="carpetArea" required type="number" placeholder="Carpet Area (sqft)" />
+                <input id="saleableArea" required type="number" placeholder="Saleable Area (sqft)" />
+                <input id="parking" required type="number" placeholder="Number of Parking" />
+              </div>
+              <div class="form-row form-3">
+                <input id="askingPrice" required type="number" placeholder="Asking Price (₹)" />
+                <select id="propertyStatus" required>
+                  <option value="">Status</option>
+                  <option>Available</option>
+                  <option>Under Negotiation</option>
+                  <option>Closed</option>
+                </select>
+                <input id="ownerName" required placeholder="Owner Name" />
+              </div>
+              <div class="form-row">
+                <input id="mediaImages" placeholder="Picture URLs (comma separated)" />
+                <input id="mediaVideos" placeholder="Video URLs (comma separated)" />
+              </div>
+              <textarea id="propertyNotes" rows="3" placeholder="Internal notes"></textarea>
+              <button type="submit" class="primary">Add Property</button>
+            </form>
+            <div id="backendPropertyGrid" class="grid top-gap"></div>
+          </section>
+
+          <section class="card">
+            <div class="section-head">
+              <h2>Lead & Follow-up Management</h2>
+              <input id="leadSearch" placeholder="Search lead by name/phone/source" />
+            </div>
+            <form id="leadForm">
+              <div class="form-row form-3">
+                <input id="leadName" required placeholder="Lead Name" />
+                <input id="leadPhone" required placeholder="Phone" maxlength="10" />
+                <input id="leadEmail" type="email" placeholder="Email" />
+              </div>
+              <div class="form-row form-3">
+                <select id="leadSource" required>
+                  <option value="">Lead Source</option>
+                  <option>Website</option>
+                  <option>Social Media</option>
+                  <option>Referral</option>
+                  <option>Walk-in</option>
+                </select>
+                <input id="leadRequirement" required placeholder="Requirement" />
+                <input id="leadBudget" required type="number" placeholder="Budget (₹)" />
+              </div>
+              <div class="form-row form-3">
+                <input id="nextFollowUp" required type="date" />
+                <select id="leadStage" required>
+                  <option>New</option>
+                  <option>Contacted</option>
+                  <option>Site Visit</option>
+                  <option>Negotiation</option>
+                  <option>Won</option>
+                  <option>Lost</option>
+                </select>
+                <input id="assignedProperty" placeholder="Map to Unit No" />
+              </div>
+              <textarea id="leadRemarks" rows="3" placeholder="Follow-up remarks"></textarea>
+              <button type="submit" class="primary">Create / Update Lead</button>
+            </form>
+            <div id="leadGrid" class="grid top-gap"></div>
+          </section>
+
+          <section class="card">
+            <h2>Marketing Console</h2>
+            <p class="muted">Push selected properties to public website and social media campaigns.</p>
+            <div id="marketingGrid" class="grid"></div>
+          </section>
+
+          <button id="logoutBtn" class="danger">Logout</button>
+        </section>
       </section>
     </main>
 
