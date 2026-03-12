@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreeNest - Zero Brokerage Rentals & Sales</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">🏠 FreeNest</div>
+      <nav>
+        <a href="#listings">Listings</a>
+        <a href="#post">Post Property</a>
+        <a href="#verify">Verify Account</a>
+      </nav>
+      <button id="postFreeBtn" class="primary">Post for FREE</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>No Brokerage. No Hidden Fees. 100% Free.</h1>
+        <p>
+          A community-first property marketplace inspired by NoBroker — but completely free for owners and seekers.
+        </p>
+        <div class="hero-tags">
+          <span>✅ Free Listings</span>
+          <span>✅ Verified Users</span>
+          <span>✅ Direct Contact</span>
+        </div>
+      </section>
+
+      <section id="verify" class="card">
+        <h2>Verify your account</h2>
+        <p class="muted">Verification keeps spam low and trust high.</p>
+
+        <div class="auth-grid">
+          <div class="auth-box">
+            <h3>Phone OTP</h3>
+            <label for="phone">Phone Number</label>
+            <input id="phone" type="tel" placeholder="e.g. 9876543210" maxlength="10" />
+            <button id="sendOtpBtn">Send OTP</button>
+
+            <label for="otp">Enter OTP</label>
+            <input id="otp" type="text" placeholder="6 digit OTP" maxlength="6" />
+            <button id="verifyOtpBtn">Verify OTP</button>
+            <small class="muted" id="otpHint">OTP is generated locally for demo purposes.</small>
+          </div>
+
+          <div class="auth-box">
+            <h3>Social Login</h3>
+            <p>Use trusted identity providers.</p>
+            <button id="googleBtn" class="social google">Continue with Google</button>
+            <button id="facebookBtn" class="social facebook">Continue with Facebook</button>
+            <small class="muted">In production, connect OAuth with Firebase/Auth0.</small>
+          </div>
+        </div>
+
+        <div id="authStatus" class="status">Not verified</div>
+      </section>
+
+      <section id="listings" class="card">
+        <div class="section-head">
+          <h2>Featured listings</h2>
+          <input id="search" placeholder="Search by city/locality/type" />
+        </div>
+        <div id="listingGrid" class="listing-grid"></div>
+      </section>
+
+      <section id="post" class="card">
+        <h2>Post your property</h2>
+        <p>Verified users can list properties in under a minute.</p>
+
+        <form id="postForm">
+          <div class="form-row">
+            <input id="title" required placeholder="Title (2BHK near metro)" />
+            <input id="city" required placeholder="City" />
+          </div>
+          <div class="form-row">
+            <input id="locality" required placeholder="Locality" />
+            <select id="type" required>
+              <option value="">Property Type</option>
+              <option>Apartment</option>
+              <option>Independent House</option>
+              <option>PG</option>
+              <option>Commercial</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <input id="price" required type="number" placeholder="Monthly Rent / Price" />
+            <input id="contact" required placeholder="Contact Number" maxlength="10" />
+          </div>
+          <textarea id="description" rows="3" placeholder="Describe property highlights"></textarea>
+          <button type="submit" class="primary">Publish Listing</button>
+        </form>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
