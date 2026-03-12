@@ -113,6 +113,18 @@ function switchTab(tabId) {
   pages.forEach((page) => page.classList.toggle("active", page.id === tabId));
 }
 
+function followupBadge(dateValue) {
+  if (!dateValue) return `<span class="badge neutral">No Date</span>`;
+  const date = new Date(dateValue);
+  const today = new Date();
+  date.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  if (date.getTime() < today.getTime()) return `<span class="badge overdue">Overdue</span>`;
+  if (date.getTime() === today.getTime()) return `<span class="badge today">Due Today</span>`;
+  return `<span class="badge upcoming">Upcoming</span>`;
+}
+
 function updateAuth() {
   if (!state.sessionUser) {
     authStatus.textContent = "Logged out";
@@ -129,9 +141,28 @@ function updateAuth() {
 
   const usersTab = document.getElementById("usersTab");
   usersTab.style.display = hasAccess("users") ? "inline-block" : "none";
+  document.querySelector('[data-tab="inventoryPage"]').style.display = hasAccess("inventory") ? "inline-block" : "none";
+  document.querySelector('[data-tab="leadPage"]').style.display = hasAccess("leads") ? "inline-block" : "none";
+  document.querySelector('[data-tab="marketingPage"]').style.display = hasAccess("marketing") ? "inline-block" : "none";
+
   document.getElementById("userForm").style.display = hasAccess("users") ? "block" : "none";
+  document.getElementById("propertyForm").style.display = hasAccess("inventory") ? "block" : "none";
+  document.getElementById("leadForm").style.display = hasAccess("leads") ? "block" : "none";
+  document.getElementById("marketingGrid").style.display = hasAccess("marketing") ? "grid" : "none";
 
   if (!hasAccess("users") && document.getElementById("usersPage").classList.contains("active")) {
+    switchTab("dashboardPage");
+  }
+
+  if (!hasAccess("inventory") && document.getElementById("inventoryPage").classList.contains("active")) {
+    switchTab("dashboardPage");
+  }
+
+  if (!hasAccess("leads") && document.getElementById("leadPage").classList.contains("active")) {
+    switchTab("dashboardPage");
+  }
+
+  if (!hasAccess("marketing") && document.getElementById("marketingPage").classList.contains("active")) {
     switchTab("dashboardPage");
   }
 }
@@ -214,7 +245,9 @@ function renderBackendProperties(query = "") {
           <p>Layout: WS ${item.workstations || 0}, Cabins ${item.cabins || 0}, Conf ${item.conferenceRooms || 0}</p>
           <p>Pantry ${item.pantry || 0}, Washroom ${item.washroom || 0}, Reception ${item.reception || 0}</p>
           <p>Owner: ${item.ownerName} | ${item.ownerPhone} | ${item.ownerEmail}</p>
-          <p>Inventory Follow-up: <strong>${item.inventoryFollowUpDate}</strong></p>
+          <p>Inventory Follow-up: <strong>${item.inventoryFollowUpDate}</strong> ${followupBadge(item.inventoryFollowUpDate)}</p>
+          <p>Media: ${item.images.length} image(s), ${item.videos.length} video(s)</p>
+          <p>Publishing: Website ${item.listedOnWebsite ? "✅" : "❌"} | Social ${item.listedOnSocial ? "✅" : "❌"}</p>
         </div>
       </article>
     `
@@ -237,7 +270,7 @@ function renderLeads(query = "") {
           <h3>${lead.name} (${lead.stage})</h3>
           <p>${lead.phone} | ${lead.email}</p>
           <p>Source: ${lead.source} | Requirement: ${lead.requirement}</p>
-          <p>Budget: ${formatCurrency(lead.budget)} | Next Follow-up: ${lead.nextFollowUp}</p>
+          <p>Budget: ${formatCurrency(lead.budget)} | Next Follow-up: ${lead.nextFollowUp} ${followupBadge(lead.nextFollowUp)}</p>
           <p>Mapped Unit: ${lead.assignedProperty || "-"}</p>
           <small>${lead.remarks || "No remarks"}</small>
         </div>
