@@ -1,3 +1,14 @@
+const seedUsers = [
+  {
+    id: crypto.randomUUID(),
+    username: "admin",
+    password: "broker123",
+    displayName: "Super Admin",
+    role: "super_admin",
+    rights: { inventory: true, leads: true, marketing: true, users: true },
+  },
+];
+
 const seedProperties = [
   {
     id: crypto.randomUUID(),
@@ -9,35 +20,30 @@ const seedProperties = [
     carpetArea: 1250,
     saleableArea: 1590,
     parking: 2,
+    dealType: "Both",
     askingPrice: 54000000,
+    rentAmount: 280000,
+    lockIn: "12",
+    deposit: 1500000,
+    escalation: "5",
+    tenure: "5",
+    noticePeriod: "3",
+    workstations: 32,
+    cabins: 5,
+    conferenceRooms: 2,
+    pantry: 1,
+    washroom: 2,
+    reception: 1,
     status: "Available",
     ownerName: "Rohan Shah",
+    ownerPhone: "9810011122",
+    ownerEmail: "rohan.shah@example.com",
+    inventoryFollowUpDate: "2026-03-25",
     images: ["https://images.unsplash.com/photo-1560185007-c5ca9d2c014d"],
     videos: ["https://samplelib.com/lib/preview/mp4/sample-5s.mp4"],
     notes: "Sea view, freshly renovated.",
     listedOnWebsite: true,
     listedOnSocial: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: crypto.randomUUID(),
-    buildingName: "Skyline Heights",
-    location: "Whitefield, Bengaluru",
-    floor: "7",
-    unitNo: "704",
-    configuration: "2BHK",
-    carpetArea: 980,
-    saleableArea: 1220,
-    parking: 1,
-    askingPrice: 15800000,
-    status: "Under Negotiation",
-    ownerName: "Meera Nair",
-    images: ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c"],
-    videos: [],
-    notes: "Tenant vacating next month.",
-    listedOnWebsite: true,
-    listedOnSocial: false,
-    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -54,17 +60,15 @@ const seedLeads = [
     stage: "Site Visit",
     assignedProperty: "1202",
     remarks: "Site visit planned with spouse.",
-    updatedAt: new Date().toISOString(),
   },
 ];
 
 const state = {
   sessionUser: null,
+  users: JSON.parse(localStorage.getItem("crm_users") || "null") || seedUsers,
   properties: JSON.parse(localStorage.getItem("crm_properties") || "null") || seedProperties,
   leads: JSON.parse(localStorage.getItem("crm_leads") || "null") || seedLeads,
 };
-
-const VALID_USER = { username: "admin", password: "broker123", displayName: "Broker Admin" };
 
 const toast = document.getElementById("toast");
 const publicView = document.getElementById("publicView");
@@ -72,11 +76,13 @@ const backendView = document.getElementById("backendView");
 const loginPanel = document.getElementById("loginPanel");
 const crmPanel = document.getElementById("crmPanel");
 const authStatus = document.getElementById("authStatus");
+const tabs = [...document.querySelectorAll(".tab-btn")];
+const pages = [...document.querySelectorAll(".tab-page")];
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+  setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
 function formatCurrency(value) {
@@ -88,6 +94,7 @@ function formatCurrency(value) {
 }
 
 function persist() {
+  localStorage.setItem("crm_users", JSON.stringify(state.users));
   localStorage.setItem("crm_properties", JSON.stringify(state.properties));
   localStorage.setItem("crm_leads", JSON.stringify(state.leads));
 }
@@ -95,6 +102,15 @@ function persist() {
 function switchView(target) {
   publicView.classList.toggle("active", target === "public");
   backendView.classList.toggle("active", target === "backend");
+}
+
+function hasAccess(key) {
+  return Boolean(state.sessionUser?.rights?.[key]);
+}
+
+function switchTab(tabId) {
+  tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === tabId));
+  pages.forEach((page) => page.classList.toggle("active", page.id === tabId));
 }
 
 function updateAuth() {
@@ -106,16 +122,26 @@ function updateAuth() {
     return;
   }
 
-  authStatus.textContent = `Logged in as ${state.sessionUser.displayName}`;
+  authStatus.textContent = `Logged in as ${state.sessionUser.displayName} (${state.sessionUser.role})`;
   authStatus.classList.add("verified");
   loginPanel.classList.add("hidden");
   crmPanel.classList.remove("hidden");
+
+  const usersTab = document.getElementById("usersTab");
+  usersTab.style.display = hasAccess("users") ? "inline-block" : "none";
+  document.getElementById("userForm").style.display = hasAccess("users") ? "block" : "none";
+
+  if (!hasAccess("users") && document.getElementById("usersPage").classList.contains("active")) {
+    switchTab("dashboardPage");
+  }
 }
 
 function renderPublicProperties(query = "") {
   const q = query.trim().toLowerCase();
   const visible = state.properties.filter(
-    (item) => item.listedOnWebsite && `${item.buildingName} ${item.location} ${item.configuration}`.toLowerCase().includes(q)
+    (item) =>
+      item.listedOnWebsite &&
+      `${item.buildingName} ${item.location} ${item.configuration} ${item.dealType}`.toLowerCase().includes(q)
   );
 
   document.getElementById("publicPropertyGrid").innerHTML =
@@ -127,9 +153,10 @@ function renderPublicProperties(query = "") {
         <div class="content">
           <h3>${item.buildingName} • Unit ${item.unitNo}</h3>
           <p>${item.location}</p>
-          <p><strong>${item.configuration}</strong> • ${item.carpetArea} sqft carpet • ${item.parking} parking</p>
-          <p class="price">${formatCurrency(item.askingPrice)}</p>
-          <small class="muted">For details, contact brokerage desk.</small>
+          <p><strong>${item.configuration}</strong> • ${item.carpetArea} sqft • ${item.parking} parking</p>
+          <p>Type: <strong>${item.dealType}</strong></p>
+          <p class="price">${formatCurrency(item.askingPrice || item.rentAmount)}</p>
+          <small class="muted">Owner contact hidden. Request callback from brokerage.</small>
         </div>
       </article>
     `
@@ -138,23 +165,38 @@ function renderPublicProperties(query = "") {
 }
 
 function renderStats() {
-  const totalInventory = state.properties.length;
-  const available = state.properties.filter((p) => p.status === "Available").length;
-  const totalLeads = state.leads.length;
-  const dueFollowUps = state.leads.filter((lead) => new Date(lead.nextFollowUp) <= new Date()).length;
-
+  const dueInventory = state.properties.filter((p) => new Date(p.inventoryFollowUpDate) <= new Date()).length;
+  const dueLeads = state.leads.filter((l) => new Date(l.nextFollowUp) <= new Date()).length;
   document.getElementById("statsGrid").innerHTML = `
-    <article class="stat"><h3>${totalInventory}</h3><p>Total Inventory</p></article>
-    <article class="stat"><h3>${available}</h3><p>Available Units</p></article>
-    <article class="stat"><h3>${totalLeads}</h3><p>Total Leads</p></article>
-    <article class="stat"><h3>${dueFollowUps}</h3><p>Follow-ups Due</p></article>
+    <article class="stat"><h3>${state.properties.length}</h3><p>Total Inventory</p></article>
+    <article class="stat"><h3>${state.leads.length}</h3><p>Total Leads</p></article>
+    <article class="stat"><h3>${dueInventory}</h3><p>Inventory Follow-ups Due</p></article>
+    <article class="stat"><h3>${dueLeads}</h3><p>Lead Follow-ups Due</p></article>
   `;
+}
+
+function renderInventoryFollowups() {
+  const due = state.properties.filter((p) => new Date(p.inventoryFollowUpDate) <= new Date());
+  document.getElementById("inventoryFollowUpList").innerHTML =
+    due
+      .map(
+        (item) => `<div class="list-item">${item.buildingName} • Unit ${item.unitNo} — ${item.inventoryFollowUpDate}</div>`
+      )
+      .join("") || `<div class="list-item muted">No due inventory follow-ups.</div>`;
+}
+
+function renderLeadFollowups() {
+  const due = state.leads.filter((l) => new Date(l.nextFollowUp) <= new Date());
+  document.getElementById("leadFollowUpList").innerHTML =
+    due
+      .map((lead) => `<div class="list-item">${lead.name} (${lead.stage}) — ${lead.nextFollowUp}</div>`)
+      .join("") || `<div class="list-item muted">No due lead follow-ups.</div>`;
 }
 
 function renderBackendProperties(query = "") {
   const q = query.trim().toLowerCase();
   const filtered = state.properties.filter((item) =>
-    `${item.buildingName} ${item.location} ${item.unitNo}`.toLowerCase().includes(q)
+    `${item.buildingName} ${item.location} ${item.unitNo} ${item.ownerPhone}`.toLowerCase().includes(q)
   );
 
   document.getElementById("backendPropertyGrid").innerHTML =
@@ -165,21 +207,25 @@ function renderBackendProperties(query = "") {
         <div class="content">
           <h3>${item.buildingName} • ${item.configuration}</h3>
           <p>${item.location} | Floor ${item.floor} | Unit ${item.unitNo}</p>
-          <p>Carpet/Saleable: ${item.carpetArea}/${item.saleableArea} sqft | Parking: ${item.parking}</p>
-          <p>Status: <strong>${item.status}</strong> | Owner: ${item.ownerName}</p>
-          <p class="price">${formatCurrency(item.askingPrice)}</p>
-          <small>Media: ${item.images.length} images • ${item.videos.length} videos</small>
+          <p>Area: ${item.carpetArea}/${item.saleableArea} sqft | Parking: ${item.parking}</p>
+          <p>Type: ${item.dealType} | Status: <strong>${item.status}</strong></p>
+          <p>Lease terms: Lock-in ${item.lockIn || "-"}M | Deposit ${formatCurrency(item.deposit)} | Esc. ${item.escalation || "-"}%</p>
+          <p>Tenure ${item.tenure || "-"}Y | Notice ${item.noticePeriod || "-"}M</p>
+          <p>Layout: WS ${item.workstations || 0}, Cabins ${item.cabins || 0}, Conf ${item.conferenceRooms || 0}</p>
+          <p>Pantry ${item.pantry || 0}, Washroom ${item.washroom || 0}, Reception ${item.reception || 0}</p>
+          <p>Owner: ${item.ownerName} | ${item.ownerPhone} | ${item.ownerEmail}</p>
+          <p>Inventory Follow-up: <strong>${item.inventoryFollowUpDate}</strong></p>
         </div>
       </article>
     `
       )
-      .join("") || `<p class="muted">No property records found.</p>`;
+      .join("") || `<p class="muted">No inventory records found.</p>`;
 }
 
 function renderLeads(query = "") {
   const q = query.trim().toLowerCase();
   const filtered = state.leads.filter((lead) =>
-    `${lead.name} ${lead.phone} ${lead.source}`.toLowerCase().includes(q)
+    `${lead.name} ${lead.phone} ${lead.email} ${lead.source}`.toLowerCase().includes(q)
   );
 
   document.getElementById("leadGrid").innerHTML =
@@ -189,7 +235,7 @@ function renderLeads(query = "") {
       <article class="card-item compact">
         <div class="content">
           <h3>${lead.name} (${lead.stage})</h3>
-          <p>${lead.phone}${lead.email ? ` | ${lead.email}` : ""}</p>
+          <p>${lead.phone} | ${lead.email}</p>
           <p>Source: ${lead.source} | Requirement: ${lead.requirement}</p>
           <p>Budget: ${formatCurrency(lead.budget)} | Next Follow-up: ${lead.nextFollowUp}</p>
           <p>Mapped Unit: ${lead.assignedProperty || "-"}</p>
@@ -209,7 +255,7 @@ function renderMarketingConsole() {
       <article class="card-item compact">
         <div class="content">
           <h3>${item.buildingName} • Unit ${item.unitNo}</h3>
-          <p>${item.location} • ${formatCurrency(item.askingPrice)}</p>
+          <p>${item.location} • ${formatCurrency(item.askingPrice || item.rentAmount)}</p>
           <div class="inline-actions wrap">
             <label><input type="checkbox" data-kind="website" data-id="${item.id}" ${
           item.listedOnWebsite ? "checked" : ""
@@ -226,33 +272,60 @@ function renderMarketingConsole() {
       .join("");
 }
 
+function renderUsers() {
+  document.getElementById("userGrid").innerHTML = state.users
+    .map(
+      (user) => `
+    <article class="card-item compact">
+      <div class="content">
+        <h3>${user.displayName}</h3>
+        <p>Login: ${user.username} | Role: ${user.role}</p>
+        <p>Rights: ${Object.entries(user.rights)
+          .filter(([, val]) => val)
+          .map(([key]) => key)
+          .join(", ")}</p>
+      </div>
+    </article>
+  `
+    )
+    .join("");
+}
+
 function refreshAll(queryState = {}) {
   renderPublicProperties(queryState.publicQuery);
-  if (state.sessionUser) {
-    renderStats();
-    renderBackendProperties(queryState.propertyQuery);
-    renderLeads(queryState.leadQuery);
-    renderMarketingConsole();
-  }
+  if (!state.sessionUser) return;
+
+  renderStats();
+  renderInventoryFollowups();
+  renderLeadFollowups();
+  if (hasAccess("inventory")) renderBackendProperties(queryState.propertyQuery);
+  if (hasAccess("leads")) renderLeads(queryState.leadQuery);
+  if (hasAccess("marketing")) renderMarketingConsole();
+  if (hasAccess("users")) renderUsers();
 }
 
 function handleLogin() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
+  const matched = state.users.find((u) => u.username === username && u.password === password);
 
-  if (username === VALID_USER.username && password === VALID_USER.password) {
-    state.sessionUser = VALID_USER;
-    updateAuth();
-    refreshAll();
-    showToast("Login successful");
+  if (!matched) {
+    showToast("Invalid credentials");
     return;
   }
 
-  showToast("Invalid credentials");
+  state.sessionUser = matched;
+  updateAuth();
+  refreshAll();
+  showToast("Login successful");
 }
 
 function handlePropertySubmit(event) {
   event.preventDefault();
+  if (!hasAccess("inventory")) return showToast("No inventory access");
+
+  const ownerPhone = document.getElementById("ownerPhone").value.trim();
+  if (!/^\d{10}$/.test(ownerPhone)) return showToast("Owner mobile must be 10 digits");
 
   const newProperty = {
     id: crypto.randomUUID(),
@@ -264,9 +337,25 @@ function handlePropertySubmit(event) {
     carpetArea: Number(document.getElementById("carpetArea").value),
     saleableArea: Number(document.getElementById("saleableArea").value),
     parking: Number(document.getElementById("parking").value),
+    dealType: document.getElementById("dealType").value,
     askingPrice: Number(document.getElementById("askingPrice").value),
+    rentAmount: Number(document.getElementById("rentAmount").value),
+    lockIn: document.getElementById("lockIn").value.trim(),
+    deposit: Number(document.getElementById("deposit").value),
+    escalation: document.getElementById("escalation").value.trim(),
+    tenure: document.getElementById("tenure").value.trim(),
+    noticePeriod: document.getElementById("noticePeriod").value.trim(),
+    workstations: Number(document.getElementById("workstations").value),
+    cabins: Number(document.getElementById("cabins").value),
+    conferenceRooms: Number(document.getElementById("conferenceRooms").value),
+    pantry: Number(document.getElementById("pantry").value),
+    washroom: Number(document.getElementById("washroom").value),
+    reception: Number(document.getElementById("reception").value),
     status: document.getElementById("propertyStatus").value,
     ownerName: document.getElementById("ownerName").value.trim(),
+    ownerPhone,
+    ownerEmail: document.getElementById("ownerEmail").value.trim(),
+    inventoryFollowUpDate: document.getElementById("inventoryFollowUpDate").value,
     images: document
       .getElementById("mediaImages")
       .value.split(",")
@@ -280,29 +369,21 @@ function handlePropertySubmit(event) {
     notes: document.getElementById("propertyNotes").value.trim(),
     listedOnWebsite: true,
     listedOnSocial: false,
-    createdAt: new Date().toISOString(),
   };
-
-  if (!newProperty.buildingName || !newProperty.location || !newProperty.unitNo) {
-    showToast("Please fill all mandatory property fields");
-    return;
-  }
 
   state.properties.unshift(newProperty);
   persist();
   document.getElementById("propertyForm").reset();
   refreshAll();
-  showToast("Property record added");
+  showToast("Inventory saved");
 }
 
 function handleLeadSubmit(event) {
   event.preventDefault();
+  if (!hasAccess("leads")) return showToast("No lead access");
 
   const phone = document.getElementById("leadPhone").value.trim();
-  if (!/^\d{10}$/.test(phone)) {
-    showToast("Lead phone must be a 10-digit number");
-    return;
-  }
+  if (!/^\d{10}$/.test(phone)) return showToast("Lead phone must be 10 digits");
 
   const lead = {
     id: crypto.randomUUID(),
@@ -316,17 +397,49 @@ function handleLeadSubmit(event) {
     stage: document.getElementById("leadStage").value,
     assignedProperty: document.getElementById("assignedProperty").value.trim(),
     remarks: document.getElementById("leadRemarks").value.trim(),
-    updatedAt: new Date().toISOString(),
   };
 
   state.leads.unshift(lead);
   persist();
   document.getElementById("leadForm").reset();
   refreshAll();
-  showToast("Lead saved with follow-up");
+  showToast("Lead saved");
+}
+
+function handleUserSubmit(event) {
+  event.preventDefault();
+  if (!hasAccess("users")) return showToast("Only super admin can create users");
+
+  const username = document.getElementById("newUserName").value.trim();
+  if (state.users.some((u) => u.username === username)) return showToast("Login ID already exists");
+
+  const user = {
+    id: crypto.randomUUID(),
+    username,
+    password: document.getElementById("newUserPassword").value,
+    displayName: document.getElementById("newUserDisplay").value.trim(),
+    role: document.getElementById("newUserRole").value,
+    rights: {
+      inventory: document.getElementById("accessInventory").checked,
+      leads: document.getElementById("accessLeads").checked,
+      marketing: document.getElementById("accessMarketing").checked,
+      users: false,
+    },
+  };
+
+  state.users.push(user);
+  persist();
+  document.getElementById("userForm").reset();
+  document.getElementById("accessInventory").checked = true;
+  document.getElementById("accessLeads").checked = true;
+  document.getElementById("accessMarketing").checked = true;
+  renderUsers();
+  showToast("User created with access rights");
 }
 
 function handleMarketingInteraction(event) {
+  if (!hasAccess("marketing")) return;
+
   const target = event.target;
   const id = target.dataset.id;
   if (!id) return;
@@ -336,20 +449,15 @@ function handleMarketingInteraction(event) {
 
   if (target.dataset.action === "copy") {
     const text = `${property.configuration} in ${property.buildingName}, ${property.location} at ${formatCurrency(
-      property.askingPrice
-    )}. Unit ${property.unitNo}, ${property.carpetArea} sqft carpet. DM for visit.`;
+      property.askingPrice || property.rentAmount
+    )}. Type ${property.dealType}. Contact us for visit.`;
     navigator.clipboard.writeText(text);
     showToast("Promo text copied");
     return;
   }
 
-  if (target.dataset.kind === "website") {
-    property.listedOnWebsite = target.checked;
-  }
-
-  if (target.dataset.kind === "social") {
-    property.listedOnSocial = target.checked;
-  }
+  if (target.dataset.kind === "website") property.listedOnWebsite = target.checked;
+  if (target.dataset.kind === "social") property.listedOnSocial = target.checked;
 
   persist();
   renderPublicProperties(document.getElementById("publicSearch").value);
@@ -368,10 +476,13 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 document.getElementById("propertyForm").addEventListener("submit", handlePropertySubmit);
 document.getElementById("leadForm").addEventListener("submit", handleLeadSubmit);
+document.getElementById("userForm").addEventListener("submit", handleUserSubmit);
 document.getElementById("marketingGrid").addEventListener("click", handleMarketingInteraction);
 document.getElementById("marketingGrid").addEventListener("change", handleMarketingInteraction);
+tabs.forEach((tab) => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
 
 persist();
 switchView("public");
+switchTab("dashboardPage");
 updateAuth();
 refreshAll();
